@@ -101,9 +101,10 @@ public class SignIn : MonoBehaviour
             messageBox.SetActive(true);
             message.text = deserialized.data.message;
             int id = deserialized.data.user.id;
-            PlayerPrefs.SetInt("playerID", id);
+            PlayerPrefs.SetInt("playerID", id);//player ID
             string role = deserialized.data.user.role;
-            PlayerPrefs.SetString("role", role); //role;
+            PlayerPrefs.SetString("role", role); 
+
         }
     }
 }
