@@ -103,7 +103,7 @@ public class SignIn : MonoBehaviour
             int id = deserialized.data.user.id;
             PlayerPrefs.SetInt("playerID", id);
             string role = deserialized.data.user.role;
-            PlayerPrefs.SetString("role", role);
+            PlayerPrefs.SetString("role", role); //role;
         }
     }
 }
