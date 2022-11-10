@@ -29,7 +29,7 @@ public class GetNGOs : MonoBehaviour
         var req = new UnityWebRequest(URL, "GET");
 
         //byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-
+        //byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
         //req.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
 
         req.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
