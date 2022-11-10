@@ -29,9 +29,8 @@ public class GetNGOs : MonoBehaviour
         var req = new UnityWebRequest(URL, "GET");
 
         //byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-
-        //req.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-
+        //byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+      
         req.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         req.SetRequestHeader("Content-Type", "application/json");
         yield return req.SendWebRequest();
