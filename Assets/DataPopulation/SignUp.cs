@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 
 public class SignUp : MonoBehaviour
 {
+   
     public InputField Name;
     public InputField Email;
     public InputField Password;
@@ -22,6 +23,9 @@ public class SignUp : MonoBehaviour
     public GameObject Sign_UP;
     public GameObject SignInScreen;
     public GameObject SignUpScreen;
+    public Text message;
+    
+    
 
     string URL = "https://dashcache.herokuapp.com/signup";
     // Start is called before the first frame update
@@ -33,7 +37,56 @@ public class SignUp : MonoBehaviour
     }
     void createuser()
     {
-        StartCoroutine(Uploads());
+        if (Name.text.Length == 0)
+        {
+            Debug.Log("1");
+            message.text = "User field required";
+        }
+        else if (Email.text.Length == 0)
+        {
+            Debug.Log("2");
+            message.text = "Email field required";
+        }
+        else if (!Email.text.EndsWith("@gmail.com"))
+        {
+            Debug.Log("3");
+            message.text = "Incomplete email";
+        }
+        else if (Password.text.Length == 0)
+        {
+            Debug.Log("4");
+            message.text = "Password field required";
+        }
+        else if (ConfirmPassword.text.Length == 0)
+        {
+            Debug.Log("5");
+            message.text = "Confirm password field required";
+        }
+
+        else if (Password.text != ConfirmPassword.text)
+        {
+            Debug.Log("6");
+            message.text = "Password doesn't match";
+        }
+        else if (City.text.Length == 0)
+        {
+            Debug.Log("7");
+            message.text = "City field  required";
+        }
+
+        else if (Country.text.Length == 0)
+        {
+            Debug.Log("8");
+            message.text = "Country field is required";
+        }
+
+        else if (Name.text.Length != 0 && Email.text.Length != 0 && Password.text.Length != 0 && ConfirmPassword.text.Length != 0 && City.text.Length != 0 && Country.text.Length != 0)
+        {
+
+            StartCoroutine(Uploads());
+
+        }
+
     }
     IEnumerator Uploads()
     {
@@ -67,14 +120,21 @@ public class SignUp : MonoBehaviour
         else
         {
             string response = req.downloadHandler.text;
+            Debug.Log(response);
             JSONNode itemsData = JSON.Parse(req.downloadHandler.text);
             Signup_Info deserialized = JsonConvert.DeserializeObject<Signup_Info>(response);
-            
-            if(deserialized.status == 200)
+
+            if (deserialized.status == 500)
             {
+                message.text = "User already exists";
+            }
+            else if (deserialized.status == 200)
+            {
+                
                 SignInScreen.SetActive(true);
                 SignUpScreen.SetActive(false);
             }
+            
         }
 
 
