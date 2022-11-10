@@ -10,20 +10,25 @@ using MiniJSON;
 using SimpleJSON;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using TMPro;
 
 
 public class UserInfo : MonoBehaviour
 {
     int Id;
-    public Text balance;
+    public TMP_Text Name;
+    public TMP_Text Role;
+    public TMP_Text City;
+    public TMP_Text balance;
+    
     string url = "https://dashcache.herokuapp.com/users/getUserInformation";
     // Start is called before the first frame update
-    void Start()
+
+
+    private void OnEnable()
     {
-
-        gameObject.GetComponent<Button>().onClick.AddListener(getUser);
+        getUser();
     }
-
     void getUser()
     {
         StartCoroutine(Uploads());
@@ -49,7 +54,10 @@ public class UserInfo : MonoBehaviour
             JSONNode itemsData = JSON.Parse(req.downloadHandler.text);
             RootUser deserializedProduct = JsonConvert.DeserializeObject<RootUser>(response);
 
-
+            Name.text = deserializedProduct.user.name;
+            Role.text = deserializedProduct.user.role;
+            City.text = deserializedProduct.user.city;
+            balance.text = deserializedProduct.user.total_collection.ToString();
 
             Debug.Log("Email: " + deserializedProduct.user.email);
             Debug.Log("Name: " + deserializedProduct.user.name);

@@ -68,7 +68,7 @@ namespace GoMap
 			string url = URL + "location=" + tile.goTile.tileCenter.latitude + "," + tile.goTile.tileCenter.longitude;
 
 			//Perform the request
-			int ID = 1;
+			int ID = PlayerPrefs.GetInt("playerID");
 			var req = new UnityWebRequest(URL + "/?id=" + ID, "GET");
 
 			//byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);

@@ -15,10 +15,12 @@ public class Vote : MonoBehaviour
 {
     public int NGO_ID;
     string URL = "https://dashcache.herokuapp.com/users/castVote";
-    void Start()
+    private void OnEnable()
     {
-        gameObject.GetComponent<Button>().onClick.AddListener(VoteCast);
+        VoteCast();
     }
+
+  
     void VoteCast()
     {
         StartCoroutine(Uploads());
@@ -26,7 +28,7 @@ public class Vote : MonoBehaviour
     IEnumerator Uploads()
     {
         CastVote vote = new CastVote();
-        vote.player_id = PlayerPrefs.GetInt("playerID");
+        vote.player_id =  PlayerPrefs.GetInt("playerID");
         vote.ngo_id = NGO_ID;
 
 
