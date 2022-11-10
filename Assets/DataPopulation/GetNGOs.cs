@@ -30,8 +30,7 @@ public class GetNGOs : MonoBehaviour
 
         //byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
         //byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-        //req.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-
+      
         req.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         req.SetRequestHeader("Content-Type", "application/json");
         yield return req.SendWebRequest();
