@@ -14,6 +14,7 @@ using UnityEngine.UI;
 public class GetNGOs : MonoBehaviour
 {
     public string URL = "https://dashcache.herokuapp.com/users/getNGOs";
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -55,11 +56,7 @@ public class GetNGOs : MonoBehaviour
 
                     };
 
-                foreach (NGO_Data info in Data)
-                {
-                    Debug.Log("Info" + info.id + "Name" + info.name);
-                }
-
+                
             }
 
 

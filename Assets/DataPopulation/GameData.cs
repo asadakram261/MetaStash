@@ -15,7 +15,11 @@ public class Locations
     public string updated_at { set; get; }
 
 }
-
+public class VoteData
+{
+    public int ID;
+    public int Votess;
+}
 [System.Serializable]
 public class Sign_In
 {
@@ -45,7 +49,6 @@ public class userData
     public string city;
     public string country;
 }
-
 [System.Serializable]
 public class CastVote
 {
