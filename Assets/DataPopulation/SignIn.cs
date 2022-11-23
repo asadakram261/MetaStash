@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Net;
 using UnityEngine.Networking;
@@ -11,13 +12,15 @@ using SimpleJSON;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
+
 public class SignIn : MonoBehaviour
 {
     public InputField Email;
     public InputField Password;
     public GameObject Signin;
     public Text message;
-    public GameObject messageBox;
+    public GameObject loader;
+   
     string URL = "https://dashcache.herokuapp.com/login";
     // Start is called before the first frame update
     void Start()
@@ -30,40 +33,35 @@ public class SignIn : MonoBehaviour
     {
         if (Email.text.Length == 0)
         {
-            messageBox.SetActive(true);
-            
-            message.text = "Email required";
-
-          //  Debug.Log("Email required");
+          message.text = "Email required";
         }
         else if (Password.text.Length == 0)
         {
-            
-            messageBox.SetActive(true);
+
             message.text = "Password required";
-           // Debug.Log("Password required");
         }
+        
         else if (Email.text.Length == 0 && Password.text.Length == 0)
         {
-            messageBox.SetActive(true);
-            message.text = "Email and Password required";
-           //Debug.Log("Email and password required");
+           
+           //Debug.Log("Email and password required"); 
         }
         else if(!Email.text.EndsWith("@gmail.com"))
         {
-            messageBox.SetActive(true);
+
             message.text = "Incomplete Email";
-            //Debug.Log("Incomplete Email");
         }
         else if(Email.text.Length != 0 && Password.text.Length != 0 && Email.text.EndsWith("@gmail.com"))
         {
             StartCoroutine(Uploads());
         }
+        
 
         
     }
     IEnumerator Uploads()
     {
+        loader.SetActive(true);
         userSignIN sign_in = new userSignIN();
         sign_in.email = Email.text;
         sign_in.password = Password.text;
@@ -84,6 +82,10 @@ public class SignIn : MonoBehaviour
         req.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         req.SetRequestHeader("Content-Type", "application/json");
         yield return req.SendWebRequest();
+
+        
+        
+
         if (req.result != UnityWebRequest.Result.Success)
         {
             Debug.Log("error: " + req.error);
@@ -98,12 +100,19 @@ public class SignIn : MonoBehaviour
             PlayerData deserialized = JsonConvert.DeserializeObject<PlayerData>(response);
             // Debug.Log("Line 64 !!!!!!!!"+response);
             // Debug.Log("Id: " + deserialized.data.user.id);
-            messageBox.SetActive(true);
-            message.text = deserialized.data.message;
+           
+            
             int id = deserialized.data.user.id;
-            PlayerPrefs.SetInt("playerID", id);
+            PlayerPrefs.SetInt("playerID", id);//player ID
             string role = deserialized.data.user.role;
-            PlayerPrefs.SetString("role", role);
+            PlayerPrefs.SetString("role", role); 
+            if(deserialized.data.status == 200)
+            {
+                loader.SetActive(false);
+                SceneManager.LoadScene("MainMenu");
+                
+            }
+
         }
     }
 }
