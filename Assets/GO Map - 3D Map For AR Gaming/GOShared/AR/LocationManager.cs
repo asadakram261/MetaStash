@@ -11,7 +11,7 @@ namespace GoShared {
 
     public class LocationManager : BaseLocationManager {
 
-
+		public double lon, lat;
         [Header("Location Settings")]
 		public bool useLocationServices;
 		public DemoLocation demoLocation;
@@ -108,6 +108,7 @@ namespace GoShared {
 		float tempTime;
 		public void Update () {
 
+			
 			Profiler.BeginSample("[LocationManager] Update");
 			tempTime += Time.deltaTime;
 			if (tempTime > updateEvery ) {
@@ -128,10 +129,12 @@ namespace GoShared {
 			Profiler.EndSample ();
 
 		}
-
+		
         void adjust()
         {
-
+            lon = currentLocation.longitude;
+            lat = currentLocation.latitude;
+            Debug.Log($"Longitude: {lon} and Latitude: {lat}");
             Vector3 current = currentLocation.convertCoordinateToVector();
             Vector3 v = current;
             currentLocation = Coordinates.convertVectorToCoordinates(v);
@@ -159,7 +162,10 @@ namespace GoShared {
 
 
 		#region Location Updates
-
+		public void SetAvatar(GameObject _avatar)
+		{
+			avatar = _avatar;
+		}
 		void GPSLocationCheck () {
 
 			status = Input.location.status;
@@ -215,6 +221,7 @@ namespace GoShared {
 
 		void AvatarPositionCheck () {
 
+			
             if (avatar != null && worldOrigin != null && !worldOrigin.isZeroCoordinates()) {
 				currentLocation = Coordinates.convertVectorToCoordinates (avatar.transform.position);
 				if (onLocationChanged != null) {
@@ -329,24 +336,39 @@ namespace GoShared {
             if (cam == null)
             {
 
-                if (Input.GetKey(KeyCode.W))
-                {
-                    v = current + new Vector3(0, 0, demo_WASDspeed);
-                }
-                if (Input.GetKey(KeyCode.S))
-                {
-                    v = current + new Vector3(0, 0, -demo_WASDspeed);
-                }
-                if (Input.GetKey(KeyCode.A))
-                {
-                    v = current + new Vector3(-demo_WASDspeed, 0, 0);
-                }
-                if (Input.GetKey(KeyCode.D))
-                {
-                    v = current + new Vector3(demo_WASDspeed, 0, 0);
-                }
-
-            } else {
+				//if (Input.GetKey(KeyCode.W))
+				//{
+				//    v = current + new Vector3(0, 0, demo_WASDspeed);
+				//}
+				//if (Input.GetKey(KeyCode.S))
+				//{
+				//    v = current + new Vector3(0, 0, -demo_WASDspeed);
+				//}
+				//if (Input.GetKey(KeyCode.A))
+				//{
+				//    v = current + new Vector3(-demo_WASDspeed, 0, 0);
+				//}
+				//if (Input.GetKey(KeyCode.D))
+				//{
+				//    v = current + new Vector3(demo_WASDspeed, 0, 0);
+				//}
+				if (Input.GetKeyDown(KeyCode.W))
+				{
+					v = current + new Vector3(0, 0, demo_WASDspeed);
+				}
+				if (Input.GetKeyDown(KeyCode.S))
+				{
+					v = current + new Vector3(0, 0, -demo_WASDspeed);
+				}
+				if (Input.GetKeyDown(KeyCode.A))
+				{
+					v = current + new Vector3(-demo_WASDspeed, 0, 0);
+				}
+				if (Input.GetKeyDown(KeyCode.D))
+				{
+					v = current + new Vector3(demo_WASDspeed, 0, 0);
+				}
+			} else {
 
                 if (Input.GetKey(KeyCode.W))
                 {

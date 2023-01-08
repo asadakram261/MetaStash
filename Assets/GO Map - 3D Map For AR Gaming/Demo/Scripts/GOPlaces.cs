@@ -15,26 +15,27 @@ using GoShared;
 namespace GoMap
 {
 
-	public class GOPlaces : MonoBehaviour
+	public class GOPlaces : BaseLocationManager
 	{
-
+		public double lde, lte;
 		public GOMap goMap;
-		public GameObject Sphere;
-		public GameObject Cube;
+		public GameObject dollar;
+		public GameObject Bitcoin;
 		private Dollar info;
 		private GameObject prefab;
 		public bool addGOPlaceComponent = false;
+		public MoveAvatar avatarLocation;
+		
 
 
 
-
-		string URL = "https://dashcache.herokuapp.com/users/getDropLocations";
+		string URL = "https://meta-stash.herokuapp.com/users/getDropLocations";
 		[HideInInspector] public IDictionary iconsCache = new Dictionary<string, Sprite>();
 
 		// Use this for initialization
 		void Awake()
 		{
-
+			
 			if (URL == "")
 			{
 				Debug.LogWarning("API is missing");
@@ -49,9 +50,16 @@ namespace GoMap
 
 		}
 
+		
 		void OnLoadTile(GOTile tile)
 		{
+			StartCoroutine(GetCoordinates());
 			StartCoroutine(NearbySearch(tile));
+		}
+		IEnumerator GetCoordinates()
+        {
+			yield return new WaitForSeconds(2);
+			
 		}
 
 		IEnumerator NearbySearch(GOTile tile)
@@ -66,15 +74,20 @@ namespace GoMap
 
 			//The complete nearby search url, api key is added at the end
 			string url = URL + "location=" + tile.goTile.tileCenter.latitude + "," + tile.goTile.tileCenter.longitude;
-
+			yield return new WaitForSeconds(2);
+			Debug.Log("GOPlaces:77");
+			lde = 74.3315;// avatarLocation.ch_longitude;
+			lte = 31.5047;// avatarLocation.ch_latitude;
+			Debug.Log($"Lon: {lde} and Lat: {lte}");
+			
 			//Perform the request
-			int ID = PlayerPrefs.GetInt("playerID");
-			var req = new UnityWebRequest(URL + "/?id=" + ID, "GET");
-
-			//byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-
-			//req.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-
+			InfoDrop dropValue = new InfoDrop();
+			dropValue.longitude = lde;
+			dropValue.latitude = lte;
+			string json = JsonConvert.SerializeObject(dropValue);
+			UnityWebRequest req = new UnityWebRequest(URL, "GET");
+			byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+			req.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
 			req.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
 			req.SetRequestHeader("Content-Type", "application/json");
 			yield return req.SendWebRequest();
@@ -87,14 +100,14 @@ namespace GoMap
 				string response = req.downloadHandler.text;
 				//Deserialize the json response
 				IDictionary deserializedResponse = (IDictionary)Json.Deserialize(response);
-
+				Debug.Log($"Response: {response}");
 				//Debug.Log(string.Format("[GO Places] Tile center: {0} - Request Url {1} - response {2}", tileCenter.toLatLongString(), url, response));
 
 				//That's our list of Places
 				//IList results = (IList)deserializedResponse["results"];
 				GameObject placesContainer = new GameObject("Spawn");
 				placesContainer.transform.SetParent(tile.transform);
-
+				
 
 				JSONNode itemsData = JSON.Parse(req.downloadHandler.text);
 				for (int i = 0; i < itemsData["data"].Count; i++)
@@ -141,9 +154,9 @@ namespace GoMap
 							continue;
 						if (p.reward_type == "Dollar")
 						{
-							prefab = Cube;
+							prefab = dollar;
 
-							info = Cube.GetComponent<Dollar>();
+							info = dollar.GetComponent<Dollar>();
 							info.id = p.id;
 							info.reward_type = p.reward_type;
 							info.reward_amount = p.reward_amount;
@@ -156,9 +169,9 @@ namespace GoMap
 
 						else if (p.reward_type == "Bitcoin")
 						{
-							prefab = Sphere;
+							prefab = Bitcoin;
 
-							info = Sphere.GetComponent<Dollar>();
+							info = Bitcoin.GetComponent<Dollar>();
 							info.id = p.id;
 							info.reward_type = p.reward_type;
 							info.reward_amount = p.reward_amount;

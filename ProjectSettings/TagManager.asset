@@ -4,7 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - Dollar
+  - Bitcoin
   - Drop
+  - Cube
+  - Sphere
   layers:
   - Default
   - TransparentFX
@@ -41,4 +45,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: New Layer
+    uniqueID: 1285178569
     locked: 0

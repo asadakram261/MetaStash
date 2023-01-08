@@ -8,10 +8,16 @@ using UnityEngine.Events;
 
 
 public class MoveAvatar : MonoBehaviour {
-
+	public double ch_longitude, ch_latitude;
 	public GOMap goMap;
-	public GameObject avatarFigure;
+	private GameObject avatarFigure;
+	public GameObject[] characters;
+	int selectedCharater;
+	int playerID;
+	private Animator animator;
+	public LocationManager location_manager;
 
+	
 	public AvatarAnimationState animationState = AvatarAnimationState.Idle;
 	[HideInInspector] public float dist;
 	public enum AvatarAnimationState{
@@ -23,16 +29,71 @@ public class MoveAvatar : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		selectedCharater = PlayerPrefs.GetInt("selectedCharacter");
+		animator = characters[selectedCharater].GetComponent<Animator>();
+		Debug.Log("animator=" + animator.gameObject.name);
+		playerID = PlayerPrefs.GetInt("playerID");
+		if(playerID != 0)
+        {
+			Debug.Log("Registered player character");
+			//selectedCharater = PlayerPrefs.GetInt("selectedCharacter");
+		}
+		else
+        {
+			Debug.Log("Guest Character");
+			selectedCharater = PlayerPrefs.GetInt("GuestCharacter");
+        }
+		
+		Debug.Log($"Selected Character index is {selectedCharater}");
+		avatarFigure = characters[selectedCharater];
+		avatarFigure.SetActive(true);
 		goMap.locationManager.onOriginSet.AddListener((Coordinates) => {OnOriginSet(Coordinates);});
 		goMap.locationManager.onLocationChanged.AddListener((Coordinates) => {OnLocationChanged(Coordinates);});
 		if (goMap.useElevation)
 			goMap.OnTileLoad.AddListener((GOTile) => {OnTileLoad(GOTile);});
-	}
 
-	#region GoMap events
+		LocationManager locationManager = (LocationManager)FindObjectOfType(typeof(LocationManager));
+		locationManager.SetAvatar(characters[selectedCharater]);
+    }
 
-	public void OnTileLoad (GOTile tile) {
+    public void Update()
+    {
+    //      //AvatarAnimationState State = AvatarAnimationState.Idle;
+    //      /*float h = Input.GetAxis("Horizontal");
+    //float v = Input.GetAxis("Vertical");
+    //bool fire = Input.GetButtonDown("Fire1");
+
+    //animator.SetFloat("Forward", v);
+    //animator.SetFloat("Strafe", h);
+    //animator.SetBool("Fire", fire);*/
+    //      //Debug.Log("Animation State: " + animationState);
+
+    if (animationState.ToString() == "Idle")
+	{
+			animator.SetBool("Idle", true);
+			animator.SetBool("Walk", false);
+			animator.SetBool("Run", false);
+		}
+	else if(animationState.ToString() == "Walk")
+        {
+			animator.SetBool("Walk", true);
+			animator.SetBool("Run", false);
+			animator.SetBool("Idle", false);
+		}
+    else if (animationState.ToString() == "Run")
+    {
+			animator.SetBool("Walk", true);
+			animator.SetBool("Run", false);
+			animator.SetBool("Idle", false);
+		}
+
+}
+
+
+
+#region GoMap events
+
+public void OnTileLoad (GOTile tile) {
 
 		Vector3 currentLocation = goMap.locationManager.currentLocation.convertCoordinateToVector ();
 
@@ -50,7 +111,9 @@ public class MoveAvatar : MonoBehaviour {
 	#region Location manager events
 
 	void OnOriginSet (Coordinates currentLocation) {
-
+		ch_longitude = currentLocation.longitude;
+		ch_latitude = currentLocation.latitude;
+		Debug.Log($"Long: {currentLocation.longitude} and Lat: {currentLocation.latitude}");
 		//Position
 		Vector3 currentPosition = currentLocation.convertCoordinateToVector (0);
 		if(goMap.useElevation)
@@ -83,10 +146,6 @@ public class MoveAvatar : MonoBehaviour {
 	#region Move Avatar
 
 	void moveAvatar (Vector3 lastPosition, Vector3 currentPosition) {
-
-
-
-
 		StartCoroutine (move (lastPosition,currentPosition,0.5f));
 	}
 
@@ -104,24 +163,39 @@ public class MoveAvatar : MonoBehaviour {
 			elapsedTime += Time.deltaTime;
 
 			dist = Vector3.Distance (lastPosition, currentPosition);
-
-			AvatarAnimationState state = AvatarAnimationState.Idle; 
+			//Debug.Log("Distance: " + dist);
+			AvatarAnimationState state = AvatarAnimationState.Idle;
 
 			if (dist > 4)
-				state = AvatarAnimationState.Run;
-			else state = AvatarAnimationState.Walk;
-
+			{		
+				state = AvatarAnimationState.Run;	
+				/*animator.SetBool("Run", true);
+				animator.SetBool("Idle", false);*/
+			}
+		
+			//state = AvatarAnimationState.Walk;
+			
+          /*  else if(animationState.ToString() == "Idle")
+            {
+				animator.SetBool("Idle", true);
+				animator.SetBool("Run", false);
+			}*/
+			
 			if (state != animationState) {
-
+				
 				animationState = state;
 				OnAnimationStateChanged.Invoke(animationState);
 			}
 
 			yield return new WaitForEndOfFrame();
 		}
+		
 
+		
 		animationState = AvatarAnimationState.Idle;
+		Debug.Log(animationState);
 		OnAnimationStateChanged.Invoke(animationState);
+
 
 	}
 		
